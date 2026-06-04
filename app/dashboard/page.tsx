@@ -69,7 +69,8 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       const { data, error } = await supabase
         .from("courses")
         .select("*")
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: true })
+        .limit(4);
 
       if (error) {
         fetchError = `Supabase Error: ${error.message}`;
