@@ -9,6 +9,7 @@ import CoursesView from "../tiles/CoursesView";
 import ActivityView from "../tiles/ActivityView";
 import LeaderboardView from "../tiles/LeaderboardView";
 import SettingsView from "../tiles/SettingsView";
+import Loader from "../ui/Loader";
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -25,13 +26,31 @@ interface ClientLayoutProps {
 export default function ClientLayout({ children }: ClientLayoutProps) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
 
-  // Sync collapsed state from Sidebar component if we want, 
-  // but lifting it here and passing it down is much cleaner.
-  // Let's modify Sidebar to accept isCollapsed and onToggle.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitializing(false);
+    }, 3000); // 3 seconds minimum loading time
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="flex min-h-screen relative">
+      <AnimatePresence>
+        {isInitializing && (
+          <motion.div
+            key="global-loader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="fixed inset-0 z-50 pointer-events-auto"
+          >
+            <Loader />
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Sidebar Navigation */}
       <SidebarWithState
         activeTab={activeTab}
